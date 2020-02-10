@@ -1,7 +1,9 @@
+# Using AWS as the provider for these examples
 provider "aws" {
   region = "us-east-2"
 }
 
+# Launch config for web server cluster. Specifies the type of instances to create.
 resource "aws_launch_configuration" "example" {
   image_id        = "ami-0c55b159cbfafe1f0"
   instance_type   = "t2.micro"
@@ -18,6 +20,8 @@ resource "aws_launch_configuration" "example" {
   }
 }
 
+# Define the config for the autoscaling group. Sets the min and
+# max number of servers, sets the target group, links to the launch config and subnet from data source
 resource "aws_autoscaling_group" "example" {
   launch_configuration = aws_launch_configuration.example.name
   vpc_zone_identifier  = data.aws_subnet_ids.default.ids
@@ -32,6 +36,7 @@ resource "aws_autoscaling_group" "example" {
   }
 }
 
+# Create the load balancer (ALB type), and specify subnets and sec. groups
 resource "aws_lb" "example" {
   name               = "terraform-asg-example"
   load_balancer_type = "application"
@@ -39,6 +44,7 @@ resource "aws_lb" "example" {
   security_groups    = [aws_security_group.alb.id]
 }
 
+# Create the load balancer listener resource (the DNS name, port, protocol for the web app cluster)
 resource "aws_lb_listener" "http" {
   load_balancer_arn = aws_lb.example.arn
   port              = 80
@@ -54,6 +60,7 @@ resource "aws_lb_listener" "http" {
   }
 }
 
+# Security group used by the cluster of instances
 resource "aws_security_group" "instance" {
   name = "terraform-example-instance"
   ingress {
@@ -64,6 +71,7 @@ resource "aws_security_group" "instance" {
   }
 }
 
+# Security group for the load balancer
 resource "aws_security_group" "alb" {
   name = "terraform-example-alb"
   # Allow inbound HTTP requests
@@ -82,6 +90,7 @@ resource "aws_security_group" "alb" {
   }
 }
 
+# Load balancer target group, specifies the health check rules
 resource "aws_lb_target_group" "asg" {
   name     = "terraform-asg-example"
   port     = var.server_port
@@ -98,6 +107,7 @@ resource "aws_lb_target_group" "asg" {
   }
 }
 
+# Listener rules for LB, specifies paths to forward to target group
 resource "aws_lb_listener_rule" "asg" {
   listener_arn = aws_lb_listener.http.arn
   priority     = 100
@@ -112,6 +122,7 @@ resource "aws_lb_listener_rule" "asg" {
   }
 }
 
+# AWS data sources to get subnet IDs
 data "aws_vpc" "default" {
   default = true
 }
@@ -120,12 +131,14 @@ data "aws_subnet_ids" "default" {
   vpc_id = data.aws_vpc.default.id
 }
 
+# Server port input var
 variable "server_port" {
   description = "The port the server will use for HTTP requests"
   type        = number
   default     = 8080
 }
 
+# Output the dns name of the load balancer
 output "alb_dns_name" {
   value       = aws_lb.example.dns_name
   description = "The domain name of the load balancer"
