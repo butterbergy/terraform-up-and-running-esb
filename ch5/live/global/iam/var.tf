@@ -6,10 +6,20 @@ variable "user_names" {
 
 variable "hero_thousand_faces" {
   description = "map"
-  type = map(string)
-    default = {
-    neo = "hero"
-    trinity = "love interest"
+  type        = map(string)
+  default = {
+    neo      = "hero"
+    trinity  = "love interest"
     morpheus = "mentor"
   }
+}
+
+variable "give_neo_cloudwatch_full_access" {
+  description = "If true, neo gets full access to CloudWatch"
+  type        = bool
+}
+
+variable "enable_new_user_data" {
+  description = "If set to true, use the new User Data script"
+  type        = bool
 }

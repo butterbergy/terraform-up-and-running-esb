@@ -25,21 +25,21 @@ output "bios" {
 }
 
 output "upper_roles" {
-  value = {for name, role in var.hero_thousand_faces : upper(name) => upper(role)}
+  value = { for name, role in var.hero_thousand_faces : upper(name) => upper(role) }
 }
 
 output "for_directive" {
   value = <<EOF
-    %{ for name in var.user_names }
+    %{for name in var.user_names}
       ${name}
-    %{ endfor }
+    %{endfor}
   EOF
 }
 
 output "for_directive_strip_marker" {
   value = <<EOF
-    %{ for name in var.user_names ~}
+    %{for name in var.user_names~}
       ${name}
-    %{ endfor ~}
+    %{endfor~}
   EOF
 }
