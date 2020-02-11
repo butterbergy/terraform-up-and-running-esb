@@ -3,7 +3,7 @@ provider "aws" {
 }
 
 resource "aws_s3_bucket" "terraform_state" {
-  bucket = "terraform-up-and-running-state-esb"
+  bucket = var.bucket_name
   # Prevent accidental deletion of this S3 bucket
   lifecycle {
     prevent_destroy = true
@@ -24,23 +24,11 @@ resource "aws_s3_bucket" "terraform_state" {
 }
 
 resource "aws_dynamodb_table" "terraform_locks" {
-  name         = "terraform-up-and-running-locks"
+  name         = var.table_name
   billing_mode = "PAY_PER_REQUEST"
   hash_key     = "LockID"
   attribute {
     name = "LockID"
     type = "S"
-  }
-}
-
-terraform {
-  backend "s3" {
-    # Replace this with your bucket name!
-    bucket = "terraform-up-and-running-state-esb"
-    key    = "global/s3/terraform.tfstate"
-    region = "us-east-2"
-    # Replace this with your DynamoDB table name!
-    dynamodb_table = "terraform-up-and-running-locks"
-    encrypt        = true
   }
 }

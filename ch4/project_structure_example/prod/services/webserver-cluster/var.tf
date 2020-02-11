@@ -10,13 +10,9 @@ variable "db_remote_state_key" {
   default     = "stage/data-stores/mysql/terraform.tfstate"
 }
 
-# ---------------------------------------------------------------------------------------------------------------------
-# OPTIONAL PARAMETERS
-# These parameters have reasonable defaults.
-# ---------------------------------------------------------------------------------------------------------------------
 
 variable "cluster_name" {
   description = "The name to use to namespace all the resources in the cluster"
   type        = string
-  default     = "webservers-stage"
+  default     = "webservers-prod"
 }
