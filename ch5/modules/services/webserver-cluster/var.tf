@@ -45,3 +45,8 @@ variable "enable_autoscaling" {
   description = "If set to true, enable auto scaling"
   type        = bool
 }
+
+variable "name" {
+  description = "A name to render"
+  type = string
+}
